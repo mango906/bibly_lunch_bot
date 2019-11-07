@@ -1,8 +1,6 @@
 const { RTMClient } = require("@slack/client");
 
-const botAPIToken = "xoxb-7569711284-823584234279-xPoQEkUaG2Be4q8EldGcXZI2";
-
-const token = process.env.SLACK_TOKEN || botAPIToken;
+const { token } = require("./config");
 
 const rtm = new RTMClient(token);
 
@@ -35,6 +33,8 @@ rtm.on("message", message => {
     } else {
       rtm.sendMessage("그런건 없는데요...?", message.channel);
     }
+  } else if (text === "!점심") {
+    rtm.sendMessage(randomItem(), message.channel);
   }
 });
 
@@ -43,9 +43,17 @@ function dataToText() {
   if (!data.length) return "점심이 없어요.";
 
   data.forEach(el => {
-    const text = `${el.id}. 이름 : ${el.name}, 가격 : ${el.price} \n`;
-    msg += text;
+    msg += ObjectToText(el);
   });
 
   return msg;
+}
+
+function randomItem() {
+  const item = data[Math.floor(Math.random() * data.length)];
+  return ObjectToText(item);
+}
+
+function ObjectToText(obj) {
+  return `${obj.id}. 이름 : ${obj.name}, 가격 : ${obj.price} \n`;
 }
